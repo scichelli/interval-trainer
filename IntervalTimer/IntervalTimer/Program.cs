@@ -21,9 +21,9 @@ namespace IntervalTimer
             Console.ReadLine();
         }
 
-        private static SoundPlayer InitializePlayer()
+        private static Sounder InitializePlayer()
         {
-            return new SoundPlayer(Assembly.GetExecutingAssembly().GetManifestResourceStream("IntervalTimer.tada.wav"));
+            return new SystemSounder(new SoundPlayer(Assembly.GetExecutingAssembly().GetManifestResourceStream("IntervalTimer.tada.wav")));
         }
     }
 
@@ -38,13 +38,13 @@ namespace IntervalTimer
 
     public class Trainer
     {
-        private SoundPlayer _player;
+        private Sounder _player;
         private Notifier _notifier;
         private Stopwatch _stopwatch;
         private IntervalState _state;
         private int _intervals;
 
-        public Trainer(SoundPlayer player, Notifier notifier)
+        public Trainer(Sounder player, Notifier notifier)
         {
             _player = player;
             _notifier = notifier;
@@ -62,7 +62,7 @@ namespace IntervalTimer
         public void Run()
         {
             _stopwatch.Start();
-            _notifier.Info("Start warming up");
+            _notifier.Info("Get going.");
 
             while (_state != IntervalState.Done)
             {
@@ -125,6 +125,7 @@ namespace IntervalTimer
 
         private void TransitionToRunning()
         {
+            _intervals++;
             _notifier.Info("Start running!");
             _player.Play();
             _stopwatch.Restart();
@@ -133,7 +134,6 @@ namespace IntervalTimer
 
         private void TransitionToWalking()
         {
-            _intervals++;
             _notifier.Info("Walk.");
             _player.Play();
             _stopwatch.Restart();
@@ -166,6 +166,25 @@ namespace IntervalTimer
         public void Info(string message)
         {
             Console.WriteLine(message);
+        }
+    }
+
+    public interface Sounder
+    {
+        void Play();
+    }
+
+    public class SystemSounder : Sounder
+    {
+        private SoundPlayer _player;
+
+        public SystemSounder(SoundPlayer player)
+        {
+            _player = player;
+        }
+        public void Play()
+        {
+            _player.Play();
         }
     }
 

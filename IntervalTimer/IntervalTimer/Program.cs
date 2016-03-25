@@ -9,7 +9,14 @@ namespace IntervalTimer
     {
         static void Main(string[] args)
         {
-            var trainer = new Trainer(InitializePlayer(), new ConsoleNotifier());
+            var trainer = new Trainer(InitializePlayer(), new ConsoleNotifier())
+            {
+                WarmUpDuration = 5.Minutes(),
+                RunDuration = 30.Seconds(),
+                WalkDuration = 2.Minutes(),
+                CoolDownDuration = 5.Minutes(),
+                IntervalsGoal = 6
+            };
             trainer.Run();
             Console.ReadLine();
         }
@@ -46,6 +53,12 @@ namespace IntervalTimer
             _intervals = 0;
         }
 
+        public long WarmUpDuration { get; set; }
+        public long RunDuration { get; set; }
+        public long WalkDuration { get; set; }
+        public long CoolDownDuration { get; set; }
+        public int IntervalsGoal { get; set; }
+
         public void Run()
         {
             _stopwatch.Start();
@@ -73,7 +86,7 @@ namespace IntervalTimer
 
         private void Warming()
         {
-            if (_stopwatch.ElapsedMilliseconds == 5.Minutes())
+            if (_stopwatch.ElapsedMilliseconds == WarmUpDuration)
             {
                 TransitionToRunning();
             }
@@ -81,9 +94,9 @@ namespace IntervalTimer
 
         private void Running()
         {
-            if (_stopwatch.ElapsedMilliseconds == 30.Seconds())
+            if (_stopwatch.ElapsedMilliseconds == RunDuration)
             {
-                if (_intervals < 6)
+                if (_intervals < IntervalsGoal)
                 {
                     TransitionToWalking();
                 }
@@ -96,7 +109,7 @@ namespace IntervalTimer
 
         private void Walking()
         {
-            if (_stopwatch.ElapsedMilliseconds == 2.Minutes())
+            if (_stopwatch.ElapsedMilliseconds == WalkDuration)
             {
                 TransitionToRunning();
             }
@@ -104,7 +117,7 @@ namespace IntervalTimer
 
         private void Cooling()
         {
-            if (_stopwatch.ElapsedMilliseconds == 5.Minutes())
+            if (_stopwatch.ElapsedMilliseconds == CoolDownDuration)
             {
                 End();
             }

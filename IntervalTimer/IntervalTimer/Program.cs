@@ -9,7 +9,7 @@ namespace IntervalTimer
     {
         static void Main(string[] args)
         {
-            var trainer = new Trainer(InitializePlayer(), new ConsoleNotifier())
+            var trainer = new Trainer(new SystemSounder("IntervalTimer.tada.wav"), new ConsoleNotifier())
             {
                 WarmUpDuration = 5.Minutes(),
                 RunDuration = 30.Seconds(),
@@ -19,11 +19,6 @@ namespace IntervalTimer
             };
             trainer.Run();
             Console.ReadLine();
-        }
-
-        private static Sounder InitializePlayer()
-        {
-            return new SystemSounder(new SoundPlayer(Assembly.GetExecutingAssembly().GetManifestResourceStream("IntervalTimer.tada.wav")));
         }
     }
 
@@ -178,10 +173,11 @@ namespace IntervalTimer
     {
         private SoundPlayer _player;
 
-        public SystemSounder(SoundPlayer player)
+        public SystemSounder(string soundFile)
         {
-            _player = player;
+            _player = new SoundPlayer(Assembly.GetExecutingAssembly().GetManifestResourceStream(soundFile));
         }
+
         public void Play()
         {
             _player.Play();
